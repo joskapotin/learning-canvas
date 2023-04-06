@@ -2,7 +2,7 @@ import { drawImage, drawParticules, setCanvasSize } from "./canvas.js"
 import { createImageElement } from "./helpers.js"
 import { createParticules } from "./particules.js"
 
-const init = ({ imageUrl, canvasId, size = 2 }) => {
+const init = ({ imageUrl, canvasId, row = 2, col = 2 }) => {
   // Create image element
   const imageElement = createImageElement(imageUrl)
 
@@ -30,15 +30,15 @@ const init = ({ imageUrl, canvasId, size = 2 }) => {
       canvasWidth: canvas.width,
       canvasHeight: canvas.height,
       context,
-      width: Math.ceil(canvas.width / size),
-      height: Math.ceil(canvas.height / size),
+      width: Math.round(canvas.width / col),
+      height: Math.round(canvas.height / row),
     })
 
     // clear the canvas
     context.clearRect(0, 0, canvas.width, canvas.height)
 
     // draw the particules
-    drawParticules({ context, particules, size })
+    drawParticules({ context, particules })
   }
 }
 
