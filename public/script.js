@@ -5,8 +5,8 @@ const createImageElement = imageUrl => {
 }
 
 const setCanvasSize = ({ canvas, image }) => {
-  canvas.width = 256
-  canvas.height = 256
+  canvas.width = image.width
+  canvas.height = image.height
 }
 
 const drawImage = ({ canvas, context, image }) => {
@@ -39,66 +39,93 @@ const generateAverageColor = colorArray => {
     .map(color => Math.floor(color / colorArray.length))
 }
 
-const createCellGrid = ({ canvas, context, cellSize }) => {
+const createParticule = ({ size, x, y, color }) => {
+  return {
+    size,
+    x,
+    y,
+    color,
+  }
+}
+
+const createParticules = ({ canvas, context, size }) => {
   const { data } = context.getImageData(0, 0, canvas.width, canvas.height)
 
+  // format the data so each element is an array of [r, g, b, a]
   const pixelColors = create2dArrayFrom1dArray(data, 4)
 
+  // create a grid of pixels (2d array)
   const pixelGrid = create2dArrayFrom1dArray(pixelColors, canvas.width)
 
-  const cellGrid = []
-  for (let row = 0; row < pixelGrid.length; row += cellSize) {
-    const cells = []
-    for (let col = 0; col < pixelGrid[row].length; col += cellSize) {
+  // create particules object array
+  const particules = []
+  for (let row = 0; row < pixelGrid.length; row += size) {
+    // step inside the row
+    for (let col = 0; col < pixelGrid[row].length; col += size) {
+      // step inside the column
+      // loop through the pixels in the cell
       const cell = []
-      for (let i = 0; i < cellSize; i += 1) {
-        for (let j = 0; j < cellSize; j += 1) {
-          cell.push(pixelGrid[row + i][col + j])
+      for (let i = 0; i < size; i += 1) {
+        for (let j = 0; j < size; j += 1) {
+          if (pixelGrid[row + i] && pixelGrid[row + i][col + j])
+            cell.push(pixelGrid[row + i][col + j])
         }
       }
+      // average the colors of the pixels in the cell
       const averageColor = generateAverageColor(cell)
 
-      cells.push(averageColor)
+      // create a particule
+      const particule = createParticule({
+        size: size,
+        x: col,
+        y: row,
+        color: `rgba(${averageColor[0]}, ${averageColor[1]}, ${averageColor[2]}, 1)`,
+      })
+
+      // add the particule to the array
+      particules.push(particule)
     }
-    cellGrid.push(cells)
   }
 
-  console.log("cellGrid", cellGrid)
-
-  return cellGrid
+  return particules
 }
 
-const drawCell = ({ context, cell, x, y, cellSize }) => {
-  context.fillStyle = `rgba(${cell[0]}, ${cell[1]}, ${cell[2]}, 1)`
-  context.fillRect(x, y, cellSize, cellSize)
+const drawParticule = ({ context, particule }) => {
+  // context.strokeStyle = "#0000ff"
+  // context.strokeRect(x, y, cellSize, cellSize)
+  context.fillStyle = particule.color
+  context.fillRect(particule.x, particule.y, particule.size, particule.size)
 }
 
-const play = ({ imageUrl, canvasId, cellSize = 2 }) => {
+const drawParticules = ({ context, particules }) => {
+  particules.forEach(particule => {
+    drawParticule({ context, particule })
+  })
+}
+
+const init = ({ imageUrl, canvasId, size = 2 }) => {
+  // Create image element
   const imageElement = createImageElement(imageUrl)
+
+  // When image is loaded do this
   imageElement.onload = () => {
+    // initialize canvas
     const canvas = document.getElementById(canvasId)
     const context = canvas.getContext("2d")
-
     setCanvasSize({ canvas, image: imageElement })
 
+    // draw image on canvas
     drawImage({ canvas, context, image: imageElement })
 
-    const cellGrid = createCellGrid({ canvas, context, cellSize })
+    // create an array of particules
+    const particules = createParticules({ canvas, context, size })
 
-    // context.clearRect(0, 0, canvas.width, canvas.height)
+    // remove the image
+    context.clearRect(0, 0, canvas.width, canvas.height)
 
-    for (let row = 0; row < cellGrid.length; row += 1) {
-      for (let col = 0; col < cellGrid[row].length; col += 1) {
-        drawCell({
-          context,
-          cell: cellGrid[row][col],
-          x: row * cellSize,
-          y: col * cellSize,
-          cellSize,
-        })
-      }
-    }
+    // draw the particules
+    drawParticules({ context, particules, size })
   }
 }
 
-play({ imageUrl: "image.jpg", canvasId: "canvas1", cellSize: 16 })
+init({ imageUrl: "image.jpg", canvasId: "canvas1", size: 4 })
