@@ -30,4 +30,18 @@ const getAverageColor = colorArray => {
     .map(color => Math.floor(color / colorArray.length))
 }
 
-export { create2dArrayFrom1dArray, createImageElement, getAverageColor }
+const generateRandomColor = () => {
+  return [
+    Math.floor(Math.random() * 255),
+    Math.floor(Math.random() * 255),
+    Math.floor(Math.random() * 255),
+    Math.floor(Math.random() * 255),
+  ]
+}
+
+export {
+  create2dArrayFrom1dArray,
+  createImageElement,
+  generateRandomColor,
+  getAverageColor,
+}

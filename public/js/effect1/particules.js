@@ -1,4 +1,8 @@
-import { create2dArrayFrom1dArray, getAverageColor } from "./helpers.js"
+import {
+  create2dArrayFrom1dArray,
+  generateRandomColor,
+  getAverageColor,
+} from "./helpers.js"
 
 const createParticule = ({ width, height, x, y, color }) => {
   return {
@@ -37,12 +41,26 @@ const createParticules = ({
         }
       }
 
+      // get the average color of the surrounding pixels
+      const averageColor = getAverageColor(surroundingPixels)
+
+      // add somerandomness to the color
+      const randomColor = generateRandomColor()
+      const averageColorRandomized = getAverageColor([
+        averageColor,
+        averageColor,
+        averageColor,
+        averageColor,
+        averageColor,
+        //randomColor,
+      ])
+
       const particule = createParticule({
         width,
         height,
         x: col,
         y: row,
-        color: getAverageColor(surroundingPixels),
+        color: averageColorRandomized,
       })
 
       particules.push(particule)

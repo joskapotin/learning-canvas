@@ -3,6 +3,15 @@ const setCanvasSize = ({ canvas, width, height }) => {
   canvas.height = height
 }
 
+const useCanvas = canvasId => {
+  const canvas = document.getElementById(canvasId)
+  const context = canvas.getContext("2d")
+  return {
+    canvas,
+    context,
+  }
+}
+
 const drawImage = ({ canvasWidth, canvasHeight, context, image }) => {
   context.drawImage(image, 0, 0, canvasWidth, canvasHeight)
 }
@@ -10,8 +19,13 @@ const drawImage = ({ canvasWidth, canvasHeight, context, image }) => {
 const drawParticule = ({ context, particule }) => {
   // context.strokeStyle = "#0000ff"
   // context.strokeRect(x, y, cellSize, cellSize)
-  context.fillStyle = `rgba(${particule.color[0]}, ${particule.color[1]}, ${particule.color[2]}, 1)`
+
+  context.fillStyle = `rgba(${particule.color[0]}, ${particule.color[1]}, ${
+    particule.color[2]
+  }, ${(particule.color[3] * 1) / 255})`
+
   // context.fillRect(particule.x, particule.y, particule.width, particule.height)
+
   context.beginPath()
   context.ellipse(
     particule.x + particule.width / 2,
@@ -32,4 +46,4 @@ const drawParticules = ({ context, particules }) => {
   })
 }
 
-export { drawImage, drawParticules, setCanvasSize }
+export { drawImage, drawParticules, setCanvasSize, useCanvas }

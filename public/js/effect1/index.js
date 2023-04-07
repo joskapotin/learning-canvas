@@ -1,4 +1,9 @@
-import { drawImage, drawParticules, setCanvasSize } from "./canvas.js"
+import {
+  drawImage,
+  drawParticules,
+  setCanvasSize,
+  useCanvas,
+} from "./canvas.js"
 import { createImageElement } from "./helpers.js"
 import { createParticules } from "./particules.js"
 
@@ -9,8 +14,7 @@ const init = ({ imageUrl, canvasId, particuleWidth, particuleHeight }) => {
   // When image is loaded do this
   imageElement.onload = () => {
     // initialize canvas
-    const canvas = document.getElementById(canvasId)
-    const context = canvas.getContext("2d")
+    const { canvas, context } = useCanvas(canvasId)
     setCanvasSize({
       canvas,
       width: imageElement.width,
