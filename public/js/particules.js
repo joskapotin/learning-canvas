@@ -4,6 +4,8 @@ const createParticule = ({ width, height, x, y, color }) => {
   return {
     width,
     height,
+    originX: x,
+    originY: y,
     x,
     y,
     color,
