@@ -1,16 +1,15 @@
+import { HSLToRGB, RGBToHSL, modulo } from "../utils.js"
+
 class Particle {
   constructor({ canvas, size, color, position }) {
-    this.originX = Math.floor(position.x)
-    this.originY = Math.floor(position.y)
+    this.originX = Math.round(position.x)
+    this.originY = Math.round(position.y)
+    this.x = Math.round(Math.random() * canvas.width)
+    this.y = Math.round(Math.random() * canvas.height)
+    this.color = { ...color, alpha: 0 }
     this.originColor = color
-    // this.x = this.originX
-    // this.y = this.originY
-
-    this.x = Math.floor(Math.random() * canvas.width)
-    this.y = Math.floor(Math.random() * canvas.height)
     this.size = size
     this.radius = this.size / 2
-    this.color = { ...color, alpha: 0.5 }
   }
 
   drawCircle(ctx) {
@@ -22,28 +21,43 @@ class Particle {
       0,
       Math.PI * 2
     )
-    //ctx.fillStyle = `rgba(255,255,255,.5)`
+    // ctx.fillStyle = `rgba(255,255,255,.5)`
     ctx.fillStyle = `rgba(${this.color.red}, ${this.color.green}, ${this.color.blue}, ${this.color.alpha})`
     ctx.fill()
   }
 
   drawSquare(ctx) {
-    //ctx.fillStyle = `rgba(255,255,255,.5)`
+    // ctx.fillStyle = `rgba(255,255,255,.5)`
     ctx.fillRect(this.x, this.y, this.size, this.size)
     ctx.fillStyle = `rgba(${this.color.red}, ${this.color.green}, ${this.color.blue}, ${this.color.alpha})`
   }
 
-  update() {
-    this.dx = Math.floor(this.x - this.originX)
-    this.dy = Math.floor(this.y - this.originY)
-    if (this.dx === 0 && this.dy === 0) return
-    this.x -= this.dx * 0.1
-    this.y -= this.dy * 0.1
-    if (this.dx === 0 && this.dy === 0) {
-      this.color.alpha = 1
-    } else {
-      this.color.alpha = 1 / (this.dx * this.dx) + 0.5
+  shiftColor() {
+    const { h, s, l } = RGBToHSL(this.color)
+    this.color = {
+      ...this.color,
+      ...HSLToRGB({
+        h: modulo(h + 5, 360),
+        s,
+        l,
+      }),
     }
+    // this.color.red = modulo(this.color.red + amount, 255)
+    // this.color.green = modulo(this.color.green + amount, 255)
+    // this.color.blue = modulo(this.color.blue + amount, 255)
+  }
+
+  update() {
+    this.dx = Math.round(this.x - this.originX)
+    this.dy = Math.round(this.y - this.originY)
+
+    // this.shiftColor()
+
+    if (Math.abs(this.dx) > 0) this.x -= this.dx * 0.1
+    if (Math.abs(this.dy) > 0) this.y -= this.dy * 0.1
+
+    if (this.color.alpha < 1)
+      this.color.alpha = 1 / Math.abs(this.dx * this.dy) + 0.5
   }
 }
 

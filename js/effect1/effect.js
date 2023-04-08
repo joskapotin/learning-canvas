@@ -37,8 +37,8 @@ class Effect {
         const red = this.image.pixels[index + 0]
         const green = this.image.pixels[index + 1]
         const blue = this.image.pixels[index + 2]
-        const alpha = this.image.pixels[index + 3]
-        if (alpha > 128) {
+        const alpha = this.image.pixels[index + 3] * (1 / 255)
+        if (alpha > 0.5) {
           this.particles.push(
             new Particle({
               canvas: this.canvas,
@@ -61,7 +61,7 @@ class Effect {
 
   draw() {
     this.particles.forEach(particle => {
-      //particle.drawSquare(this.ctx)
+      // particle.drawSquare(this.ctx)
       particle.drawCircle(this.ctx)
     })
   }
@@ -69,7 +69,7 @@ class Effect {
   update() {
     this.particles.forEach(particle => {
       particle.update()
-      //particle.drawSquare(this.ctx)
+      // particle.drawSquare(this.ctx)
       particle.drawCircle(this.ctx)
     })
   }

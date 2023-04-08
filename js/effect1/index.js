@@ -4,8 +4,8 @@ const app = async () => {
   const effect = new Effect({
     canvasID: "canvas1",
     imageUrl: "image.jpg",
-    size: 8,
-    gap: 1,
+    size: 32,
+    gap: 4,
   })
   await effect.init()
 
@@ -15,9 +15,23 @@ const app = async () => {
     const interval = setInterval(() => {
       effect.clearCanvas()
       effect.update()
-    }, 1000 / 60)
+    }, 5000 / 60)
     window.addEventListener(
       "mouseup",
+      () => {
+        clearInterval(interval)
+      },
+      { once: true }
+    )
+  })
+
+  window.addEventListener("touchstart", () => {
+    const interval = setInterval(() => {
+      effect.clearCanvas()
+      effect.update()
+    }, 5000 / 60)
+    window.addEventListener(
+      "touchend",
       () => {
         clearInterval(interval)
       },
