@@ -2,11 +2,19 @@ import { createImage } from "./image.js"
 import { Particle } from "./particle.js"
 
 class Effect {
-  constructor({ canvasID, imageUrl, size = 16 }) {
+  constructor({ canvasID, imageUrl, size = 16, gap = 16 }) {
     this.canvasID = canvasID
     this.imageUrl = imageUrl
     this.size = size
-    this.init()
+    this.gap = size + gap
+  }
+
+  async init() {
+    this.canvasSetup()
+    await this.drawImage()
+    this.analyzeImage()
+    this.clearCanvas()
+    this.draw()
   }
 
   canvasSetup() {
@@ -17,32 +25,29 @@ class Effect {
   }
 
   async drawImage() {
-    const image = await createImage({ ctx: this.ctx, imageUrl: this.imageUrl })
-    this.offsetX = image.offsetX
-    this.offsetY = image.offsetY
-    this.width = image.width
-    this.height = image.height
-    this.pixels = image.pixels
+    this.image = await createImage({ ctx: this.ctx, imageUrl: this.imageUrl })
   }
 
   analyzeImage() {
     // analyze the image,extract color and create the particles
-    const gap = this.size
     this.particles = []
-    for (let y = 0; y < this.height; y += gap) {
-      for (let x = 0; x < this.width; x += gap) {
-        const index = (y * this.width + x) * 4
-        const red = this.pixels[index + 0]
-        const green = this.pixels[index + 1]
-        const blue = this.pixels[index + 2]
-        const alpha = this.pixels[index + 3]
+    for (let y = 0; y < this.image.height; y += this.gap) {
+      for (let x = 0; x < this.image.width; x += this.gap) {
+        const index = (y * this.image.width + x) * 4
+        const red = this.image.pixels[index + 0]
+        const green = this.image.pixels[index + 1]
+        const blue = this.image.pixels[index + 2]
+        const alpha = this.image.pixels[index + 3]
         if (alpha > 128) {
           this.particles.push(
             new Particle({
-              ctx: this.ctx,
+              canvas: this.canvas,
               size: this.size,
               color: { red, green, blue, alpha },
-              position: { x: x + this.offsetX, y: y + this.offsetY },
+              position: {
+                x: x + this.image.offsetX,
+                y: y + this.image.offsetY,
+              },
             })
           )
         }
@@ -56,17 +61,17 @@ class Effect {
 
   draw() {
     this.particles.forEach(particle => {
-      //particle.drawSquare(ctx)
+      //particle.drawSquare(this.ctx)
       particle.drawCircle(this.ctx)
     })
   }
 
-  async init() {
-    this.canvasSetup()
-    await this.drawImage()
-    this.analyzeImage()
-    this.clearCanvas()
-    this.draw()
+  update() {
+    this.particles.forEach(particle => {
+      particle.update()
+      //particle.drawSquare(this.ctx)
+      particle.drawCircle(this.ctx)
+    })
   }
 }
 
