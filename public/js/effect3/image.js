@@ -1,4 +1,4 @@
-const createImage = async (ctx, imageUrl) => {
+const createImage = async ({ ctx, imageUrl }) => {
   const createImageElement = url => {
     const image = new Image()
     image.src = url

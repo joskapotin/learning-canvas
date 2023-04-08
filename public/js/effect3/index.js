@@ -1,11 +1,11 @@
-import { createEffect } from "./effect.js"
+import { Effect } from "./effect.js"
 
 const app = async () => {
-  const effect = await createEffect({
+  const effect = new Effect({
     canvasID: "canvas1",
     imageUrl: "image.jpg",
+    size: 16,
   })
-  effect.draw()
 }
 
 export { app }

@@ -1,55 +1,73 @@
 import { createImage } from "./image.js"
-import { createParticle } from "./particle.js"
+import { Particle } from "./particle.js"
 
-const createEffect = async ({ canvasID, imageUrl, size = 16 }) => {
-  // canvas setup
-  const canvas = document.getElementById(canvasID)
-  const ctx = canvas.getContext("2d")
-  canvas.width = window.innerWidth
-  canvas.height = window.innerHeight
+class Effect {
+  constructor({ canvasID, imageUrl, size = 16 }) {
+    this.canvasID = canvasID
+    this.imageUrl = imageUrl
+    this.size = size
+    this.init()
+  }
 
-  // draw the image
-  const { offsetX, offsetY, width, height, pixels } = await createImage(
-    ctx,
-    imageUrl
-  )
+  canvasSetup() {
+    this.canvas = document.getElementById(this.canvasID)
+    this.ctx = this.canvas.getContext("2d")
+    this.canvas.width = window.innerWidth
+    this.canvas.height = window.innerHeight
+  }
 
-  // analyze the image,extract color and create the particles
-  const gap = size
-  const particles = []
-  for (let y = 0; y < height; y += gap) {
-    for (let x = 0; x < width; x += gap) {
-      const index = (y * width + x) * 4
-      const red = pixels[index + 0]
-      const green = pixels[index + 1]
-      const blue = pixels[index + 2]
-      const alpha = pixels[index + 3]
-      if (alpha > 128) {
-        particles.push(
-          createParticle({
-            size,
-            color: { red, green, blue, alpha },
-            position: { x: x + offsetX, y: y + offsetY },
-          })
-        )
+  async drawImage() {
+    const image = await createImage({ ctx: this.ctx, imageUrl: this.imageUrl })
+    this.offsetX = image.offsetX
+    this.offsetY = image.offsetY
+    this.width = image.width
+    this.height = image.height
+    this.pixels = image.pixels
+  }
+
+  analyzeImage() {
+    // analyze the image,extract color and create the particles
+    const gap = this.size
+    this.particles = []
+    for (let y = 0; y < this.height; y += gap) {
+      for (let x = 0; x < this.width; x += gap) {
+        const index = (y * this.width + x) * 4
+        const red = this.pixels[index + 0]
+        const green = this.pixels[index + 1]
+        const blue = this.pixels[index + 2]
+        const alpha = this.pixels[index + 3]
+        if (alpha > 128) {
+          this.particles.push(
+            new Particle({
+              ctx: this.ctx,
+              size: this.size,
+              color: { red, green, blue, alpha },
+              position: { x: x + this.offsetX, y: y + this.offsetY },
+            })
+          )
+        }
       }
     }
   }
 
-  // clear the canvas
-  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  clearCanvas() {
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
+  }
 
-  // draw the particles
-  const draw = () => {
-    particles.forEach(particle => {
+  draw() {
+    this.particles.forEach(particle => {
       //particle.drawSquare(ctx)
-      particle.drawCircle(ctx)
+      particle.drawCircle(this.ctx)
     })
   }
 
-  return {
-    draw,
+  async init() {
+    this.canvasSetup()
+    await this.drawImage()
+    this.analyzeImage()
+    this.clearCanvas()
+    this.draw()
   }
 }
 
-export { createEffect }
+export { Effect }
