@@ -17,19 +17,19 @@ class Effect {
   }
 
   async init() {
-    this.#canvasSetup()
-    await this.#createParticles()
-    this.#draw()
+    this.canvasSetup()
+    await this.createParticles()
+    this.draw()
   }
 
-  #canvasSetup() {
+  canvasSetup() {
     this.#canvas = document.getElementById(this.#canvasID)
     this.#ctx = this.#canvas.getContext("2d")
     this.#canvas.width = window.innerWidth
     this.#canvas.height = window.innerHeight
   }
 
-  async #createParticles() {
+  async createParticles() {
     // analyze the image,extract color and create the particles
     const { width, height, pixels } = await getImageData(this.#imageUrl)
 
@@ -48,6 +48,7 @@ class Effect {
         const green = pixels[index + 1]
         const blue = pixels[index + 2]
         const alpha = pixels[index + 3] * (1 / 255)
+
         if (alpha > 0.5) {
           this.particles.push(
             new Particle({
@@ -69,7 +70,7 @@ class Effect {
     this.#ctx.clearRect(0, 0, this.#canvas.width, this.#canvas.height)
   }
 
-  #draw() {
+  draw() {
     this.particles.forEach(particle => {
       // particle.drawSquare(this.ctx)
       particle.drawCircle(this.#ctx)
