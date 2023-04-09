@@ -1,41 +1,63 @@
 import { HSLToRGB, RGBToHSL, modulo } from "../utils.js"
 
 class Particle {
+  #position
+  #color
+  #size
+
   constructor({ canvas, size, color, position }) {
-    this.originX = Math.round(position.x)
-    this.originY = Math.round(position.y)
-    this.x = Math.round(Math.random() * canvas.width)
-    this.y = Math.round(Math.random() * canvas.height)
-    this.color = { ...color, alpha: 0 }
-    this.originColor = color
-    this.size = size
-    this.radius = this.size / 2
+    this.#position = {
+      origin: { x: Math.round(position.x), y: Math.round(position.y) },
+      current: {
+        x: Math.round(Math.random() * canvas.width),
+        y: Math.round(Math.random() * canvas.height),
+      },
+    }
+
+    this.#color = {
+      origin: { ...color },
+      current: { ...color, alpha: 0 },
+    }
+
+    this.#size = {
+      origin: size,
+      current: size,
+    }
   }
 
   drawCircle(ctx) {
     ctx.beginPath()
     ctx.arc(
-      this.x + this.radius,
-      this.y + this.radius / 2,
-      this.radius,
+      this.#position.current.x + this.#size.current * 0.5,
+      this.#position.current.y + this.#size.current * 0.25,
+      this.#size.current * 0.5,
       0,
       Math.PI * 2
     )
     // ctx.fillStyle = `rgba(255,255,255,.5)`
-    ctx.fillStyle = `rgba(${this.color.red}, ${this.color.green}, ${this.color.blue}, ${this.color.alpha})`
+    ctx.fillStyle = `rgba(${this.#color.current.red}, ${
+      this.#color.current.green
+    }, ${this.#color.current.blue}, ${this.#color.current.alpha})`
     ctx.fill()
   }
 
   drawSquare(ctx) {
     // ctx.fillStyle = `rgba(255,255,255,.5)`
-    ctx.fillRect(this.x, this.y, this.size, this.size)
-    ctx.fillStyle = `rgba(${this.color.red}, ${this.color.green}, ${this.color.blue}, ${this.color.alpha})`
+    ctx.fillRect(
+      this.#position.current.x,
+      this.#position.current.y,
+      this.#size,
+      this.#size
+    )
+    ctx.fillStyle = `rgba(${this.#color.current.red}, ${
+      this.#color.current.green
+    }, ${this.#color.current.blue}, ${this.#color.current.alpha})`
   }
 
-  shiftColor() {
-    const { h, s, l } = RGBToHSL(this.color)
-    this.color = {
-      ...this.color,
+  #shiftColor() {
+    const { h, s, l } = RGBToHSL(this.#color.current)
+    this.#color.current = {
+      ...this.#color.current,
       ...HSLToRGB({
         h: modulo(h + 5, 360),
         s,
@@ -48,16 +70,16 @@ class Particle {
   }
 
   update() {
-    this.dx = Math.round(this.x - this.originX)
-    this.dy = Math.round(this.y - this.originY)
+    this.dx = Math.round(this.#position.current.x - this.#position.origin.x)
+    this.dy = Math.round(this.#position.current.y - this.#position.origin.y)
 
-    // this.shiftColor()
+    // this.#shiftColor()
 
-    if (Math.abs(this.dx) > 0) this.x -= this.dx * 0.1
-    if (Math.abs(this.dy) > 0) this.y -= this.dy * 0.1
+    if (Math.abs(this.dx) > 0) this.#position.current.x -= this.dx * 0.1
+    if (Math.abs(this.dy) > 0) this.#position.current.y -= this.dy * 0.1
 
-    if (this.color.alpha < 1)
-      this.color.alpha = 1 / Math.abs(this.dx * this.dy) + 0.5
+    if (this.#color.current.alpha < 1)
+      this.#color.current.alpha = 1 / Math.abs(this.dx * this.dy) + 0.5
   }
 }
 

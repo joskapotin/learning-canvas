@@ -4,8 +4,8 @@ const app = async () => {
   const effect = new Effect({
     canvasID: "canvas1",
     imageUrl: "image.jpg",
-    size: 32,
-    gap: 4,
+    size: 16,
+    gap: 2,
   })
   await effect.init()
 

@@ -1,42 +1,45 @@
-const createImage = async ({ ctx, imageUrl }) => {
-  const createImageElement = url => {
-    const image = new Image()
-    image.src = url
-    image.crossOrigin = "Anonymous"
-    return image
-  }
+const createCanvasElement = () => {
+  const canvas = document.createElement("canvas")
+  const ctx = canvas.getContext("2d")
+  return { canvas, ctx }
+}
 
-  const loadImage = url => {
-    return new Promise((resolve, reject) => {
-      const image = createImageElement(url)
-      image.onload = () => resolve(image)
-      image.onerror = error => reject(error)
-    })
-  }
+const createImageElement = imageUrl => {
+  const image = new Image()
+  image.src = imageUrl
+  image.crossOrigin = "Anonymous"
+  return image
+}
 
+const loadImage = imageUrl => {
+  return new Promise((resolve, reject) => {
+    const image = createImageElement(imageUrl)
+    image.onload = () => resolve(image)
+    image.onerror = error => reject(error)
+  })
+}
+
+const drawImage = async imageUrl => {
+  const { canvas, ctx } = createCanvasElement()
   const image = await loadImage(imageUrl)
 
-  //Draw the image in the center of the canvas
-  const offsetX = (ctx.canvas.width - image.width) / 2
-  const offsetY = (ctx.canvas.height - image.height) / 2
+  canvas.width = image.width
+  canvas.height = image.height
 
-  ctx.drawImage(image, offsetX, offsetY, image.width, image.height)
+  ctx.drawImage(image, 0, 0, image.width, image.height)
 
-  //exctract the image data
-  const pixels = ctx.getImageData(
-    offsetX,
-    offsetY,
-    image.width,
-    image.height
-  ).data
+  return { ctx, image: { width: image.width, height: image.height } }
+}
+
+const getImageData = async imageUrl => {
+  const { ctx, image } = await drawImage(imageUrl)
+  const pixels = ctx.getImageData(0, 0, image.width, image.height).data
 
   return {
-    offsetX,
-    offsetY,
     width: image.width,
     height: image.height,
     pixels,
   }
 }
 
-export { createImage }
+export { getImageData }
