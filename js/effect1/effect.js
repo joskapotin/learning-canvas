@@ -2,18 +2,11 @@ import { getImageData } from "./image.js"
 import { Particle } from "./particle.js"
 
 class Effect {
-  #canvasID
-  #imageUrl
-  #size
-  #gap
-  #canvas
-  #ctx
-
   constructor({ canvasID, imageUrl, size = 16, gap = 16 }) {
-    this.#canvasID = canvasID
-    this.#imageUrl = imageUrl
-    this.#size = size
-    this.#gap = this.#size + gap
+    this.canvasID = canvasID
+    this.imageUrl = imageUrl
+    this.size = Math.floor(size)
+    this.gap = Math.floor(this.size + gap)
   }
 
   async init() {
@@ -23,26 +16,26 @@ class Effect {
   }
 
   canvasSetup() {
-    this.#canvas = document.getElementById(this.#canvasID)
-    this.#ctx = this.#canvas.getContext("2d")
-    this.#canvas.width = window.innerWidth
-    this.#canvas.height = window.innerHeight
+    this.canvas = document.getElementById(this.canvasID)
+    this.ctx = this.canvas.getContext("2d")
+    this.canvas.width = window.innerWidth
+    this.canvas.height = window.innerHeight
   }
 
   async createParticles() {
     // analyze the image,extract color and create the particles
-    const { width, height, pixels } = await getImageData(this.#imageUrl)
+    const { width, height, pixels } = await getImageData(this.imageUrl)
 
     // calculate the offset of the image to center it
     const image = {
-      offsetX: (this.#canvas.width - width) / 2,
-      offsetY: (this.#canvas.height - height) / 2,
+      offsetX: (this.canvas.width - width) / 2,
+      offsetY: (this.canvas.height - height) / 2,
     }
 
     // create the particles
     this.particles = []
-    for (let y = 0; y < height; y += this.#gap) {
-      for (let x = 0; x < width; x += this.#gap) {
+    for (let y = 0; y < height; y += this.gap) {
+      for (let x = 0; x < width; x += this.gap) {
         const index = (y * width + x) * 4
         const red = pixels[index + 0]
         const green = pixels[index + 1]
@@ -52,8 +45,8 @@ class Effect {
         if (alpha > 0.5) {
           this.particles.push(
             new Particle({
-              canvas: this.#canvas,
-              size: this.#size,
+              effect: this,
+              size: this.size,
               color: { red, green, blue, alpha },
               position: {
                 x: x + image.offsetX,
@@ -67,13 +60,13 @@ class Effect {
   }
 
   clearCanvas() {
-    this.#ctx.clearRect(0, 0, this.#canvas.width, this.#canvas.height)
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
   }
 
   draw() {
     this.particles.forEach(particle => {
       // particle.drawSquare(this.ctx)
-      particle.drawCircle(this.#ctx)
+      particle.drawCircle(this.ctx)
     })
   }
 
@@ -81,7 +74,7 @@ class Effect {
     this.particles.forEach(particle => {
       particle.update()
       // particle.drawSquare(this.ctx)
-      particle.drawCircle(this.#ctx)
+      particle.drawCircle(this.ctx)
     })
   }
 }

@@ -1,13 +1,11 @@
 class Particle {
   static maxDistanceOpacity = 20
 
-  constructor({ canvas, size, color, position }) {
+  constructor({ effect, size, color, position }) {
+    this.effect = effect
     this.position = {
-      origin: { x: Math.ceil(position.x), y: Math.ceil(position.y) },
-      current: {
-        x: Math.ceil(Math.random() * canvas.width),
-        y: Math.ceil(canvas.height - Math.random() * size * 2),
-      },
+      origin: { x: position.x, y: position.y },
+      current: { x: position.x, y: position.y },
     }
 
     this.color = {
@@ -29,14 +27,37 @@ class Particle {
   }
 
   init() {
-    // this.#shiftOpacity()
+    // this.shiftOpacity()
     // this.velocity = this.getVelocity()
+
+    this.setToBottom()
+    this.setRandomizedSize()
+  }
+
+  setToBottom() {
+    this.position.current.x = Math.floor(
+      Math.random() * this.effect.canvas.width
+    )
+    this.position.current.y = Math.floor(
+      this.effect.canvas.height - Math.random() * this.size.current * 2
+    )
+  }
+
+  setRandomizedSize() {
+    const randomizedSize = Math.floor(
+      this.size.origin * (0.5 + Math.random() * 0.5)
+    )
+    this.size.current = randomizedSize
+
+    const offset = (this.size.origin - randomizedSize) * 0.5
+    this.position.current.x += offset
+    this.position.current.y += offset
   }
 
   getDistance() {
-    const dx = Math.ceil(this.position.current.x - this.position.origin.x)
-    const dy = Math.ceil(this.position.current.y - this.position.origin.y)
-    const d = Math.ceil(dx + dy)
+    const dx = this.position.current.x - this.position.origin.x
+    const dy = this.position.current.y - this.position.origin.y
+    const d = dx + dy
     return { dx, dy, d }
   }
 
@@ -69,14 +90,15 @@ class Particle {
     ctx.fillRect(
       this.position.current.x,
       this.position.current.y,
-      this.size,
-      this.size
+      this.size.current,
+      this.size.current
     )
     ctx.fillStyle = `rgba(${this.color.current.red}, ${this.color.current.green}, ${this.color.current.blue}, ${this.color.current.alpha})`
   }
 
   shiftOpacity() {
-    // shift the opacity according to the distance to the origin
+    // TODO: fix the opacity
+    // shift the opacity according to the distance from the origin
     const { d } = this.getDistance()
     this.color.current.alpha =
       Math.abs(d) > Particle.maxDistanceOpacity
@@ -93,7 +115,7 @@ class Particle {
 
   update() {
     this.moveTowardsOrigin()
-    // this.#shiftOpacity()
+    // this.shiftOpacity()
   }
 }
 
