@@ -4,8 +4,9 @@ class Particle {
   constructor({ effect, size, color, position }) {
     this.effect = effect
     this.position = {
-      origin: { x: position.x, y: position.y },
-      current: { x: position.x, y: position.y },
+      ...position,
+      current: position.start,
+      next: position.origin,
     }
 
     this.color = {
@@ -23,24 +24,17 @@ class Particle {
       y: 0.1,
     }
 
+    this.step = false
+
     this.init()
   }
 
   init() {
     // this.shiftOpacity()
-    // this.velocity = this.getVelocity()
+    this.velocity = this.getVelocity()
 
-    this.setToBottom()
+    // move this to the effect class
     this.setRandomizedSize()
-  }
-
-  setToBottom() {
-    this.position.current.x = Math.floor(
-      Math.random() * this.effect.canvas.width
-    )
-    this.position.current.y = Math.floor(
-      this.effect.canvas.height - Math.random() * this.size.current * 2
-    )
   }
 
   setRandomizedSize() {
@@ -49,27 +43,34 @@ class Particle {
     )
     this.size.current = randomizedSize
 
-    const offset = (this.size.origin - randomizedSize) * 0.5
+    const offset = Math.floor((this.size.origin - randomizedSize) * 0.5)
     this.position.current.x += offset
     this.position.current.y += offset
   }
 
   getDistance() {
-    const dx = this.position.current.x - this.position.origin.x
-    const dy = this.position.current.y - this.position.origin.y
-    const d = dx + dy
-    return { dx, dy, d }
+    const x = Math.floor(this.position.current.x - this.position.next.x)
+    const y = Math.floor(this.position.current.y - this.position.next.y)
+    const d = x + y
+    return { x, y, d }
   }
 
   getVelocity() {
     // TODO: fix the velocity
-    const ajuster = 0.0001
-    const { dx, dy } = this.getDistance()
-    if (dx === 0 || dy === 0) return { x: 1, y: 1 }
+    // A number between 0 and 1
+    // Big distance = hight velocity
+    // Small distance = low velocity
+    const acceleration = 0.2
+    const { x, y } = this.getDistance()
+
+    // clamp function
+    const clamp = (value, min, max) => {
+      return Math.min(Math.max(value, min), max)
+    }
 
     return {
-      x: Math.floor(Math.abs(dx)) * ajuster,
-      y: Math.floor(Math.abs(dy)) * ajuster,
+      x: clamp(Math.abs(x), 0, acceleration),
+      y: clamp(Math.abs(y), 0, acceleration),
     }
   }
 
@@ -106,15 +107,19 @@ class Particle {
         : 1 - Math.abs(d) / Particle.maxDistanceOpacity
   }
 
-  moveTowardsOrigin() {
-    const { dx, dy } = this.getDistance()
-    // move the particle towards the origin
-    if (Math.abs(dx) > 0) this.position.current.x -= dx * this.velocity.x
-    if (Math.abs(dy) > 0) this.position.current.y -= dy * this.velocity.y
+  move() {
+    this.position.next = this.step ? this.position.end : this.position.origin
+    const distanceToDestination = this.getDistance()
+    // this.step = distanceToDestination.d > 0 ? this.step : !this.sep
+
+    if (Math.abs(distanceToDestination.x) > 0)
+      this.position.current.x -= distanceToDestination.x * this.velocity.x
+    if (Math.abs(distanceToDestination.y) > 0)
+      this.position.current.y -= distanceToDestination.y * this.velocity.y
   }
 
   update() {
-    this.moveTowardsOrigin()
+    this.move()
     // this.shiftOpacity()
   }
 }
