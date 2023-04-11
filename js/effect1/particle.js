@@ -1,85 +1,91 @@
 class Particle {
-  static maxDistanceOpacity = 20
-
-  constructor({ effect, size, color, position }) {
+  constructor({ effect, radius, color, position, velocity = 100 }) {
     this.effect = effect
-    this.position = {
-      ...position,
-      current: position.start,
-      next: position.origin,
-    }
 
-    this.color = {
-      origin: color,
-      current: color,
-    }
+    this.position = position
+    this.position.current = { ...position.start }
+    this.position.to = { ...position.origin }
 
-    this.size = {
-      origin: size,
-      current: size,
-    }
+    this.color = {}
+    this.color.origin = color
+    this.color.current = color
 
-    this.velocity = {
-      x: 0.1,
-      y: 0.1,
-    }
+    this.radius = {}
+    this.radius.origin = this.getNearestEvenInt(radius)
+    this.radius.current = this.radius.origin
 
-    this.step = false
+    this.velocity = {}
+    this.velocity.x = velocity
+    this.velocity.y = velocity
 
     this.init()
   }
 
   init() {
-    // this.shiftOpacity()
-    this.velocity = this.getVelocity()
-
     // move this to the effect class
     this.setRandomizedSize()
+    this.setAcceleration()
+  }
+
+  snap() {
+    this.position.current = this.position.to
+  }
+
+  clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max)
+  }
+
+  getNearestEvenInt(value) {
+    return Math.round(value / 2) * 2
+  }
+
+  getRandomSize() {
+    return this.getNearestEvenInt(
+      this.clamp(
+        this.radius.origin * Math.random(),
+        this.radius.origin * 0.5,
+        this.radius.origin
+      )
+    )
   }
 
   setRandomizedSize() {
-    const randomizedSize = Math.floor(
-      this.size.origin * (0.5 + Math.random() * 0.5)
-    )
-    this.size.current = randomizedSize
-
-    const offset = Math.floor((this.size.origin - randomizedSize) * 0.5)
-    this.position.current.x += offset
-    this.position.current.y += offset
+    this.radius.current = this.getRandomSize()
   }
 
   getDistance() {
-    const x = Math.floor(this.position.current.x - this.position.next.x)
-    const y = Math.floor(this.position.current.y - this.position.next.y)
+    const x = this.position.current.x - this.position.to.x
+    const y = this.position.current.y - this.position.to.y
     const d = x + y
     return { x, y, d }
   }
 
-  getVelocity() {
-    // TODO: fix the velocity
-    // A number between 0 and 1
-    // Big distance = hight velocity
-    // Small distance = low velocity
-    const acceleration = 0.2
+  setDistance() {
+    const { x, y, d } = this.getDistance()
+    this.distance = { x, y, d }
+  }
+
+  getAcceleration() {
     const { x, y } = this.getDistance()
-
-    // clamp function
-    const clamp = (value, min, max) => {
-      return Math.min(Math.max(value, min), max)
-    }
-
+    const accX = x / this.effect.canvas.width.toFixed(2)
+    const accY = y / this.effect.canvas.height.toFixed(2)
     return {
-      x: clamp(Math.abs(x), 0, acceleration),
-      y: clamp(Math.abs(y), 0, acceleration),
+      x: accX * this.velocity.x,
+      y: accY * this.velocity.y,
     }
+  }
+
+  setAcceleration() {
+    const { x, y } = this.getAcceleration()
+    this.acceleration = { x, y }
   }
 
   drawCircle(ctx) {
     ctx.beginPath()
     ctx.arc(
-      this.position.current.x + this.size.current * 0.5,
-      this.position.current.y + this.size.current * 0.25,
-      this.size.current * 0.5,
+      this.position.current.x + this.radius.origin,
+      this.position.current.y + this.radius.origin,
+      this.radius.current,
       0,
       Math.PI * 2
     )
@@ -91,36 +97,50 @@ class Particle {
     ctx.fillRect(
       this.position.current.x,
       this.position.current.y,
-      this.size.current,
-      this.size.current
+      this.radius.current * 2,
+      this.radius.current * 2
     )
     ctx.fillStyle = `rgba(${this.color.current.red}, ${this.color.current.green}, ${this.color.current.blue}, ${this.color.current.alpha})`
   }
 
-  shiftOpacity() {
-    // TODO: fix the opacity
-    // shift the opacity according to the distance from the origin
-    const { d } = this.getDistance()
-    this.color.current.alpha =
-      Math.abs(d) > Particle.maxDistanceOpacity
-        ? 0
-        : 1 - Math.abs(d) / Particle.maxDistanceOpacity
-  }
-
   move() {
-    this.position.next = this.step ? this.position.end : this.position.origin
-    const distanceToDestination = this.getDistance()
-    // this.step = distanceToDestination.d > 0 ? this.step : !this.sep
+    this.setAcceleration()
+    // this.position.next = this.step ? this.position.end : this.position.origin
+    // this.step = distance.d > 0 ? this.step : !this.sep
 
-    if (Math.abs(distanceToDestination.x) > 0)
-      this.position.current.x -= distanceToDestination.x * this.velocity.x
-    if (Math.abs(distanceToDestination.y) > 0)
-      this.position.current.y -= distanceToDestination.y * this.velocity.y
+    if (
+      Math.abs(this.acceleration.x) < 0.2 &&
+      Math.abs(this.acceleration.y) < 0.2
+    ) {
+      this.snap()
+    } else {
+      this.position.current.x -= this.acceleration.x
+      this.position.current.y -= this.acceleration.y
+    }
+
+    // TODO second animation
+    // if (
+    //   Math.abs(this.acceleration.x) === 0 &&
+    //   Math.abs(this.acceleration.y) === 0
+    // ) {
+    //   this.position.to = { ...this.position.end }
+    //   this.setAcceleration()
+    // }
+
+    // TODO reset position if animation is done
+    // if (
+    //   this.position.current.x === this.position.end.x ||
+    //   this.position.current.y === this.position.end.y
+    // ) {
+    //   this.position.current = { ...this.position.start }
+    //   this.position.to = { ...this.position.origin }
+    //   this.setAcceleration()
+    //   this.setRandomizedSize()
+    // }
   }
 
   update() {
     this.move()
-    // this.shiftOpacity()
   }
 }
 

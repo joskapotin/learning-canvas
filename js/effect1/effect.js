@@ -2,18 +2,11 @@ import { getImageData } from "./image.js"
 import { Particle } from "./particle.js"
 
 class Effect {
-  constructor({
-    canvasID,
-    imageUrl,
-    size = 16,
-    gap = 16,
-    path = { start: "bottom", end: "top" },
-  }) {
+  constructor({ canvasID, imageUrl, radius = 8, gap = 16 }) {
     this.canvasID = canvasID
     this.imageUrl = imageUrl
-    this.size = Math.floor(size)
-    this.gap = Math.floor(this.size + gap)
-    this.path = path
+    this.radius = Math.floor(radius)
+    this.gap = Math.floor(this.radius * 2 + gap)
   }
 
   async init() {
@@ -53,20 +46,22 @@ class Effect {
           this.particles.push(
             new Particle({
               effect: this,
-              size: this.size,
+              radius: this.radius,
               color: { red, green, blue, alpha },
               position: {
                 start: {
                   x: Math.floor(Math.random() * this.canvas.width),
-                  y: Math.floor(this.canvas.height - Math.random() * this.size),
+                  y: Math.floor(
+                    this.canvas.height - Math.random() * this.radius * 4
+                  ),
                 },
                 origin: {
-                  x: Math.floor(x + image.offsetX),
-                  y: Math.floor(y + image.offsetY),
+                  x: x + image.offsetX,
+                  y: y + image.offsetY,
                 },
                 end: {
                   x: Math.floor(Math.random() * this.canvas.width),
-                  y: Math.floor(Math.random() * this.size),
+                  y: Math.floor(Math.random() * this.radius * 4),
                 },
               },
             })
