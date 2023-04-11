@@ -3,8 +3,8 @@ import { Effect } from "./effect.js"
 const app = async () => {
   const effect = new Effect({
     canvasID: "canvas1",
-    imageUrl: "image.jpg",
-    size: 16,
+    imageUrl: "destin_inconnu-1970-96x110.jpg",
+    radius: 8,
     gap: 0,
   })
   await effect.init()
