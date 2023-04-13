@@ -10,10 +10,7 @@ class Effect {
     this.velocity = velocity
 
     window.addEventListener("resize", () => {
-      console.log("resized")
-      this.resizeCanvas()
-      this.clearCanvas()
-      this.draw()
+      this.init()
     })
   }
 
@@ -61,9 +58,18 @@ class Effect {
     this.ctx = this.canvas.getContext("2d")
   }
 
-  resizeCanvas() {
-    this.canvas.width = window.innerWidth
-    this.canvas.height = window.innerHeight
+  resizeCanvas = () => {
+    // Field width need to be a multiple of the cell size
+    // we need the inner size of it's parent and the padding
+    const parentWidth =
+      this.canvas.parentElement.clientWidth +
+      this.canvas.parentElement.style.paddingInline / 2
+    const parentHeight =
+      this.canvas.parentElement.clientHeight +
+      this.canvas.parentElement.style.paddingBlock / 2
+
+    this.canvas.width = Math.floor(parentWidth / this.radius) * this.radius
+    this.canvas.height = Math.floor(parentHeight / this.radius) * this.radius
   }
 
   async createParticles() {

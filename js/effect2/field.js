@@ -5,6 +5,7 @@ class Field {
     this.canvas = canvas
     this.ctx = ctx
     this.size = size
+    this.cells = []
   }
 
   init() {
@@ -14,23 +15,28 @@ class Field {
   }
 
   createCells() {
-    this.cells = []
     for (let y = 0; y < this.canvas.height; y += this.size) {
+      const row = []
       for (let x = 0; x < this.canvas.width; x += this.size) {
-        this.cells.push(
+        row.push(
           new Cell({
             x,
             y,
             size: this.size,
-            color: "rgba(40, 0, 0, 0.5)",
+            color: "rgba(255, 255, 255, 0.5)",
           })
         )
       }
+      this.cells.push(row)
     }
   }
 
   draw() {
-    this.cells.forEach(cell => cell.draw(this.ctx))
+    this.cells.forEach(row => {
+      row.forEach(cell => {
+        cell.draw(this.ctx)
+      })
+    })
   }
 }
 
