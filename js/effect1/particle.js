@@ -1,5 +1,5 @@
 class Particle {
-  constructor({ effect, radius, color, position, velocity = 100 }) {
+  constructor({ effect, radius, color, position, velocity = 0 }) {
     this.effect = effect
 
     this.position = position
@@ -11,7 +11,7 @@ class Particle {
     this.color.current = color
 
     this.radius = {}
-    this.radius.origin = this.getNearestEvenInt(radius)
+    this.radius.origin = radius
     this.radius.current = this.radius.origin
 
     this.velocity = {}
@@ -35,17 +35,11 @@ class Particle {
     return Math.min(Math.max(value, min), max)
   }
 
-  getNearestEvenInt(value) {
-    return Math.round(value / 2) * 2
-  }
-
   getRandomSize() {
-    return this.getNearestEvenInt(
-      this.clamp(
-        this.radius.origin * Math.random(),
-        this.radius.origin * 0.5,
-        this.radius.origin
-      )
+    return this.clamp(
+      this.radius.origin * Math.random(),
+      this.radius.origin * 0.5,
+      this.radius.origin
     )
   }
 
@@ -67,8 +61,8 @@ class Particle {
 
   getAcceleration() {
     const { x, y } = this.getDistance()
-    const accX = x / this.effect.canvas.width.toFixed(2)
-    const accY = y / this.effect.canvas.height.toFixed(2)
+    const accX = x / (this.effect.image.width + this.effect.canvas.width) // .toFixed(5)
+    const accY = y / (this.effect.image.height + this.effect.canvas.height) // .toFixed(5)
     return {
       x: accX * this.velocity.x,
       y: accY * this.velocity.y,
@@ -109,8 +103,8 @@ class Particle {
     // this.step = distance.d > 0 ? this.step : !this.sep
 
     if (
-      Math.abs(this.acceleration.x) < 0.2 &&
-      Math.abs(this.acceleration.y) < 0.2
+      Math.abs(this.acceleration.x) < 0.02 &&
+      Math.abs(this.acceleration.y) < 0.02
     ) {
       this.snap()
     } else {

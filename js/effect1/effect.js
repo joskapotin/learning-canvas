@@ -2,29 +2,74 @@ import { getImageData } from "./image.js"
 import { Particle } from "./particle.js"
 
 class Effect {
-  constructor({ canvasID, imageUrl, radius = 8, gap = 16 }) {
+  constructor({ canvasID, imageUrl, radius = 8, gap = 16, velocity = 100 }) {
     this.canvasID = canvasID
     this.imageUrl = imageUrl
     this.radius = Math.floor(radius)
     this.gap = Math.floor(this.radius * 2 + gap)
+    this.velocity = velocity
+
+    window.addEventListener("resize", () => {
+      console.log("resized")
+      this.resizeCanvas()
+      this.clearCanvas()
+      this.draw()
+    })
+  }
+
+  handleEvent() {
+    this.canvas.addEventListener("mousedown", () => {
+      const interval = setInterval(() => {
+        this.clearCanvas()
+        this.update()
+      }, 5000 / 60)
+      this.canvas.addEventListener(
+        "mouseup",
+        () => {
+          clearInterval(interval)
+        },
+        { once: true }
+      )
+    })
+
+    this.canvas.addEventListener("touchstart", () => {
+      const interval = setInterval(() => {
+        this.clearCanvas()
+        this.update()
+      }, 5000 / 60)
+      this.canvas.addEventListener(
+        "touchend",
+        () => {
+          clearInterval(interval)
+        },
+        { once: true }
+      )
+    })
   }
 
   async init() {
-    this.canvasSetup()
+    this.createCanvas()
+    this.resizeCanvas()
+
     await this.createParticles()
     this.draw()
+    this.handleEvent()
   }
 
-  canvasSetup() {
+  createCanvas() {
     this.canvas = document.getElementById(this.canvasID)
     this.ctx = this.canvas.getContext("2d")
+  }
+
+  resizeCanvas() {
     this.canvas.width = window.innerWidth
     this.canvas.height = window.innerHeight
   }
 
   async createParticles() {
     // analyze the image,extract color and create the particles
-    const { width, height, pixels } = await getImageData(this.imageUrl)
+    this.image = await getImageData(this.imageUrl)
+    const { width, height, pixels } = this.image
 
     // calculate the offset of the image to center it
     const image = {
@@ -45,6 +90,7 @@ class Effect {
         if (alpha > 0.5) {
           this.particles.push(
             new Particle({
+              velocity: this.velocity,
               effect: this,
               radius: this.radius,
               color: { red, green, blue, alpha },
