@@ -123,11 +123,12 @@ class Effect {
         continue
       }
 
-      const { angle } = this.field.cells[index]
+      const { angle, color, length } = this.field.cells[index]
 
       // set the velocity of the particle
-      this.particles[i].velocity.x = Math.cos(angle) * 5
-      this.particles[i].velocity.y = Math.sin(angle) * 5
+      this.particles[i].velocity.x = Math.cos(angle) * length
+      this.particles[i].velocity.y = Math.sin(angle) * length
+      this.particles[i].color = color
 
       this.particles[i].update()
 

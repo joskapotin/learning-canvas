@@ -36,3 +36,10 @@ export const scaleValue = (value, from, to) => {
   const capped = Math.min(from[1], Math.max(from[0], value)) - from[0]
   return Math.floor(capped * scale + to[0])
 }
+
+export const getRandomRGBA = (alpha = 1) => {
+  const r = Math.floor(Math.random() * 256)
+  const g = Math.floor(Math.random() * 256)
+  const b = Math.floor(Math.random() * 256)
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`
+}
