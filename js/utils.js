@@ -30,3 +30,9 @@ export const HSLToRGB = ({ h, s, l }) => {
   const f = n => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)))
   return { red: 255 * f(0), green: 255 * f(8), blue: 255 * f(4) }
 }
+
+export const scaleValue = (value, from, to) => {
+  const scale = (to[1] - to[0]) / (from[1] - from[0])
+  const capped = Math.min(from[1], Math.max(from[0], value)) - from[0]
+  return Math.floor(capped * scale + to[0])
+}

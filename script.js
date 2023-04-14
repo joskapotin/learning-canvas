@@ -1,5 +1,5 @@
 import { Effect as Effect1 } from "./js/effect1/effect.js"
-import { effect as effect2 } from "./js/effect2/index.js"
+import { Effect as Effect2 } from "./js/effect2/effect.js"
 
 const effect1 = () => {
   const effect = new Effect1({
@@ -16,7 +16,13 @@ const effect1 = () => {
 
 effect1()
 
-effect2({
-  canvasID: "canvas2",
-  size: 32,
-})
+const effect2 = () => {
+  const effect = new Effect2({
+    canvasID: "canvas2",
+    cellSize: 32,
+  })
+  effect.init()
+
+  console.log("effect2", effect)
+}
+effect2()
