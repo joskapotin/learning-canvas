@@ -26,7 +26,7 @@ class Effect {
     cellSize = 32,
     particleAmount = 100,
     particleRadius = 5,
-    debug = false,
+    debug = true,
   }) {
     this.canvasID = canvasID
     this.cellSize = cellSize
@@ -75,7 +75,7 @@ class Effect {
       setTimeout(() => {
         this.init()
         this.throttled = false
-      }, 500)
+      }, 1000)
     })
 
     this.canvas.addEventListener("mousedown", () => {
@@ -109,17 +109,17 @@ class Effect {
       if (position.y > this.canvas.height) this.particles[i].position.y = 0
 
       // find the cell the particle is in
-      const colAmount = this.canvas.width / this.cellSize
-      const x = Math.floor(position.x / this.cellSize)
+      const cols = this.canvas.width / this.cellSize
       const y = Math.floor(position.y / this.cellSize)
-      const index = y * colAmount + x
+      const x = Math.floor(position.x / this.cellSize)
+      const index = y * cols + x
 
       // get the angle of the cell
       const { angle } = this.field.cells[index]
 
       // set the velocity of the particle
-      this.particles[i].velocity.x = Math.cos(angle) * 5
-      this.particles[i].velocity.y = Math.sin(angle) * 5
+      this.particles[i].velocity.x = Math.cos(angle) * 2
+      this.particles[i].velocity.y = Math.sin(angle) * 2
 
       this.particles[i].update()
       this.particles[i].draw(this.ctx)

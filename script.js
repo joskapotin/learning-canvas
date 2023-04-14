@@ -19,7 +19,7 @@ effect1()
 const effect2 = () => {
   const effect = new Effect2({
     canvasID: "canvas2",
-    cellSize: 32,
+    cellSize: 128,
   })
   effect.init()
 
