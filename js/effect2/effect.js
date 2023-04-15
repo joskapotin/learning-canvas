@@ -23,57 +23,59 @@ const createParticles = ({ particlesAmount, particleRadius, canvas }) => {
 class Effect {
   constructor({
     canvasID,
-    cellSize = 32,
+    resolution = 32,
     particleAmount = 100,
     particleRadius = 5,
     debug = true,
   }) {
     this.canvasID = canvasID
-    this.cellSize = cellSize
+    this.resolution = resolution
     this.particleAmount = particleAmount
     this.particleRadius = particleRadius
     this.debug = debug
     this.throttled = false
 
+    this.width = 0
+    this.height = 0
     this.particles = []
 
     this.init()
   }
 
-  init() {
+  initCanvas() {
     // Get canvas and context
     this.canvas = document.getElementById(this.canvasID)
     this.ctx = this.canvas.getContext("2d")
     this.backgroundColor = this.canvas.style.backgroundColor
+  }
 
-    // Set canvas size before initializing field
+  initField() {
+    // resize canvas before initializing field
     // to get correct cell amount
     const { width, height } = getNewCanvasSize({
       canvas: this.canvas,
-      cellSize: this.cellSize,
+      resolution: this.resolution,
     })
-    this.canvas.width = width
-    this.canvas.height = height
+    this.width = this.canvas.width = width
+    this.height = this.canvas.height = height
 
     // Create field
     this.field = new Field({
-      width: this.canvas.width,
-      height: this.canvas.height,
-      cellSize: this.cellSize,
+      rows: this.height / this.resolution,
+      cols: this.width / this.resolution,
+      resolution: this.resolution,
     })
-    if (this.debug) this.field.draw(this.ctx)
+  }
 
-    // Create particles
+  initParticles() {
     this.particles = createParticles({
       particlesAmount: this.particleAmount,
       particleRadius: this.particleRadius,
       canvas: this.canvas,
     })
+  }
 
-    // Draw particles
-    this.particles.forEach(particle => particle.draw(this.ctx))
-
-    // Handle events
+  initEvents() {
     window.addEventListener("resize", () => {
       if (this.throttled) return
       this.throttled = true
@@ -97,49 +99,56 @@ class Effect {
     })
   }
 
+  init() {
+    this.initCanvas()
+    this.initField()
+    this.initParticles()
+
+    // Draw field in debug mod
+    if (this.debug) this.field.draw(this.ctx)
+
+    // Draw particles
+    this.update()
+    this.initEvents()
+  }
+
   update() {
     clearCanvas({ canvas: this.canvas, ctx: this.ctx })
-    // this.ctx.fillStyle = "rgba(0, 0, 0, 0.2)"
-    // this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
 
     if (this.debug) this.field.draw(this.ctx)
 
-    for (let i = 0; i < this.particles.length; i++) {
-      const { position } = this.particles[i]
+    this.particles.forEach(particle => {
+      const { position } = particle
+
+      particle.position.x = position.x % this.width
+      particle.position.y = position.y % this.height
 
       // find the cell the particle is in
-      const cols = this.canvas.width / this.cellSize
-      const x = Math.floor(position.x / this.cellSize)
-      const y = Math.floor(position.y / this.cellSize)
-      const index = y * cols + x
+      const x = Math.floor(position.x / this.resolution)
+      const y = Math.floor(position.y / this.resolution)
+      const index = y * this.field.cols + x
 
-      // get the angle of the cell
+      // !DEBUG: check if cell exists
       if (!this.field.cells[index]) {
         console.log("y", y)
-        console.log("cols", cols)
+        console.log("cols", this.field.cols)
         console.log("x", x)
         console.log("index", index)
         console.log("cells", this.field.cells)
-        continue
       }
 
-      const { angle, color, length } = this.field.cells[index]
+      const { angle, color } = this.field.cells[index]
 
       // set the velocity of the particle
-      this.particles[i].velocity.x = Math.cos(angle) * length
-      this.particles[i].velocity.y = Math.sin(angle) * length
-      this.particles[i].color = color
+      particle.velocity.y = Math.cos(angle)
+      particle.velocity.x = Math.sin(angle)
+      particle.color = color
 
-      this.particles[i].update()
-
-      // loop the particles around the canvas
-      if (position.x <= 0) this.particles[i].position.x = this.canvas.width
-      if (position.x >= this.canvas.width) this.particles[i].position.x = 0
-      if (position.y <= 0) this.particles[i].position.y = this.canvas.height
-      if (position.y >= this.canvas.height) this.particles[i].position.y = 0
-
-      this.particles[i].draw(this.ctx)
-    }
+      // update the particle
+      particle.update()
+      // draw the particle
+      particle.draw(this.ctx)
+    })
   }
 }
 

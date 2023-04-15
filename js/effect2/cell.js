@@ -30,7 +30,7 @@ class Cell {
     ctx.beginPath()
     ctx.arc(0, 0, 5, 0, 2 * Math.PI)
     ctx.moveTo(0, 0)
-    ctx.lineTo(this.size * 5 * this.length, 0)
+    ctx.lineTo(this.length, 0)
     ctx.fill()
     ctx.stroke()
     ctx.restore()

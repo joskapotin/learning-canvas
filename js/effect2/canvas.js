@@ -1,4 +1,4 @@
-const getNewCanvasSize = ({ canvas, cellSize }) => {
+const getNewCanvasSize = ({ canvas, resolution }) => {
   const parentWidth =
     Number(canvas.parentElement.clientWidth) +
     Number(canvas.parentElement.style.paddingInline) / 2
@@ -7,13 +7,13 @@ const getNewCanvasSize = ({ canvas, cellSize }) => {
     Number(canvas.parentElement.style.paddingBlock) / 2
 
   return {
-    width: Math.floor(parentWidth / cellSize) * cellSize,
-    height: Math.floor(parentHeight / cellSize) * cellSize,
+    width: Math.floor(parentWidth / resolution) * resolution,
+    height: Math.floor(parentHeight / resolution) * resolution,
   }
 }
 
-const setNewCanvasSize = ({ canvas, cellSize }) => {
-  const { width, height } = getNewCanvasSize({ canvas, cellSize })
+const setNewCanvasSize = ({ canvas, resolution }) => {
+  const { width, height } = getNewCanvasSize({ canvas, resolution })
   canvas.width = width
   canvas.height = height
 }
