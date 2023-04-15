@@ -12,7 +12,7 @@ class Particle {
     this.color = color
     this.position = position
     this.velocity = velocity
-    this.history = [[{ x: this.position.x, y: this.position.y }]]
+    this.history = [{ x: this.position.x, y: this.position.y }]
     this.maxHistory = 100
   }
 
@@ -20,26 +20,20 @@ class Particle {
     ctx.save()
     ctx.fillStyle = this.color
     ctx.strokeStyle = this.color
+
+    // draw the particle
     ctx.beginPath()
-
-    // trace the particle
     ctx.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI)
-
-    // trace the trail
-    ctx.moveTo(this.history[0].x, this.history[0].y)
-    for (const point of this.history) {
-      if (
-        Math.abs(this.position.x - point.x) > this.maxHistory ||
-        Math.abs(this.position.y - point.y) > this.maxHistory
-      )
-        break
-
-      ctx.lineTo(point.x, point.y)
-      ctx.moveTo(point.x, point.y)
-    }
-
-    ctx.stroke()
     ctx.fill()
+
+    // draw the history
+    ctx.beginPath()
+    ctx.moveTo(this.history[0].x, this.history[0].y)
+    this.history.forEach(point => {
+      ctx.lineTo(point.x, point.y)
+    })
+    ctx.stroke()
+
     ctx.restore()
   }
 

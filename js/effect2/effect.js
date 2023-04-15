@@ -50,8 +50,7 @@ class Effect {
   }
 
   initField() {
-    // resize canvas before initializing field
-    // to get correct cell amount
+    // Resize canvas before initializing field to get correct cell amount
     const { width, height } = getNewCanvasSize({
       canvas: this.canvas,
       resolution: this.resolution,
@@ -120,33 +119,25 @@ class Effect {
     this.particles.forEach(particle => {
       const { position } = particle
 
+      // wrap the particle around the canvas if it goes out of bounds
       particle.position.x = position.x % this.width
       particle.position.y = position.y % this.height
 
-      // find the cell the particle is in
+      // get matching flow field cell index
       const x = Math.floor(position.x / this.resolution)
       const y = Math.floor(position.y / this.resolution)
       const index = y * this.field.cols + x
 
-      // !DEBUG: check if cell exists
-      if (!this.field.cells[index]) {
-        console.log("y", y)
-        console.log("cols", this.field.cols)
-        console.log("x", x)
-        console.log("index", index)
-        console.log("cells", this.field.cells)
-      }
-
+      // Update the particle
       const { angle, color } = this.field.cells[index]
-
-      // set the velocity of the particle
       particle.velocity.y = Math.cos(angle)
       particle.velocity.x = Math.sin(angle)
       particle.color = color
 
-      // update the particle
+      // TODO: bounce the particle off the edges of the canvas instead of wrapping
+      // TODO: if wrapping, deal with the trail
+
       particle.update()
-      // draw the particle
       particle.draw(this.ctx)
     })
   }

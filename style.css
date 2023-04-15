@@ -16,7 +16,7 @@ body {
   position: relative;
   overflow: hidden;
   display: grid;
-  place-content: justify;
+  place-content: center;
   padding: 1rem;
   background-color: rgb(13, 44, 35);
 }
