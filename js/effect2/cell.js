@@ -28,7 +28,7 @@ class Cell {
     ctx.translate(this.x + this.size / 2, this.y + this.size / 2)
     ctx.rotate(this.angle * Math.PI * 2)
     ctx.beginPath()
-    ctx.arc(0, 0, 5, 0, 2 * Math.PI)
+    ctx.arc(0, 0, this.size / 16, 0, 2 * Math.PI)
     ctx.moveTo(0, 0)
     ctx.lineTo(this.length, 0)
     ctx.fill()

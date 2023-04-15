@@ -19,8 +19,9 @@ effect1()
 const effect2 = () => {
   const effect = new Effect2({
     canvasID: "canvas2",
-    resolution: 128,
-    particleAmount: 1,
+    resolution: 32,
+    particleAmount: 10,
+    debug: true,
   })
   effect.init()
 

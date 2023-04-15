@@ -20,19 +20,32 @@ class Particle {
     ctx.save()
     ctx.fillStyle = this.color
     ctx.strokeStyle = this.color
-
-    // draw the particle
     ctx.beginPath()
     ctx.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI)
     ctx.fill()
+    ctx.restore()
+
+    // this.drawHistory(ctx)
+  }
+
+  drawHistory(ctx) {
+    ctx.save()
+    ctx.fillStyle = this.color
+    ctx.strokeStyle = this.color
 
     // draw the history
-    ctx.beginPath()
-    ctx.moveTo(this.history[0].x, this.history[0].y)
-    this.history.forEach(point => {
-      ctx.lineTo(point.x, point.y)
-    })
-    ctx.stroke()
+    for (let i = this.history.length - 1; i >= 0; i--) {
+      const ratio = i / this.history.length
+      ctx.beginPath()
+      ctx.arc(
+        this.history[i].x,
+        this.history[i].y,
+        this.radius * ratio,
+        0,
+        2 * Math.PI
+      )
+      ctx.fill()
+    }
 
     ctx.restore()
   }
