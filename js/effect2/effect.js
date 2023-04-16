@@ -1,3 +1,4 @@
+import { modulo } from "../utils.js"
 import { clearCanvas, getNewCanvasSize } from "./canvas.js"
 import { Field } from "./field.js"
 import { Particle } from "./particle.js"
@@ -120,8 +121,8 @@ class Effect {
       const { position } = particle
 
       // wrap the particle around the canvas if it goes out of bounds
-      particle.position.x = position.x % this.width
-      particle.position.y = position.y % this.height
+      particle.position.x = modulo(position.x, this.width)
+      particle.position.y = modulo(position.y, this.height)
 
       // get matching flow field cell index
       const x = Math.floor(position.x / this.resolution)
