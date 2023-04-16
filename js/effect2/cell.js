@@ -32,7 +32,7 @@ class Cell {
     ctx.beginPath()
     ctx.arc(0, 0, this.size / 16, 0, 2 * Math.PI)
     ctx.moveTo(0, 0)
-    ctx.lineTo(this.length, 0)
+    ctx.lineTo(Math.floor(this.size * 0.5), 0)
     ctx.fill()
     ctx.stroke()
     ctx.restore()
@@ -41,7 +41,7 @@ class Cell {
     // ctx.save()
     // ctx.fillStyle = this.color
     // ctx.translate(this.x + 10 / 2, this.y + 10)
-    // ctx.font = `${this.size / 10}px monospace`
+    // ctx.font = `16px monospace`
     // ctx.textAlign = "left"
     // ctx.textBaseline = "middle"
     // ctx.fillText(modulo(Math.floor(this.angle * (180 / Math.PI)), 360), 0, 0)

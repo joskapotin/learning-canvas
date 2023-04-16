@@ -55,7 +55,7 @@ class Particle {
     this.position.y += this.velocity.y
 
     // add the current position to the history
-    this.history.push({ x: this.position.x, y: this.position.y })
+    // this.history.push({ x: this.position.x, y: this.position.y })
     // remove the oldest position from the history
     if (this.history.length > this.maxHistory) this.history.shift()
   }

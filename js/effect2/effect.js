@@ -97,6 +97,20 @@ class Effect {
         { once: true }
       )
     })
+
+    this.canvas.addEventListener("touchstart", () => {
+      const interval = setInterval(() => {
+        this.clearCanvas()
+        this.update()
+      }, 5000 / 60)
+      this.canvas.addEventListener(
+        "touchend",
+        () => {
+          clearInterval(interval)
+        },
+        { once: true }
+      )
+    })
   }
 
   init() {
@@ -139,8 +153,8 @@ class Effect {
 
       // Update the particle
       const { angle, color, length } = this.field.cells[index]
-      particle.velocity.x = Math.cos(angle) * length * Math.random() * 0.2
-      particle.velocity.y = Math.sin(angle) * length * Math.random() * 0.2
+      particle.velocity.x = Math.cos(angle) * length * Math.random() * 0.3
+      particle.velocity.y = Math.sin(angle) * length * Math.random() * 0.3
       particle.color = color
 
       // TODO: bounce the particle off the edges of the canvas instead of wrapping

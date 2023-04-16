@@ -1,3 +1,4 @@
+import { scaleValue } from "../utils.js"
 import { Cell } from "./cell.js"
 
 class Field {
@@ -5,8 +6,9 @@ class Field {
     this.resolution = resolution
     this.rows = rows
     this.cols = cols
-
     this.cells = []
+    this.curve = 0.8
+    this.zoom = 100
 
     this.init()
   }
@@ -21,8 +23,11 @@ class Field {
             y: y * this.resolution,
             size: this.resolution,
             color,
-            length: this.resolution / 2,
-            angle: (Math.cos(x) + Math.sin(y)).toFixed(2),
+            length: scaleValue(Math.random(), [0, 1], [5, 15]),
+            angle: (
+              (Math.cos(x * this.zoom) + Math.sin(y * this.zoom)) *
+              this.curve
+            ).toFixed(2),
           })
         )
       }
