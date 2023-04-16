@@ -21,7 +21,7 @@ class Field {
             size: this.resolution,
             color: "rgba(255, 255, 255, 0.5)",
             length: this.resolution / 2,
-            angle: Math.sin(y) + Math.cos(x) * Math.random(),
+            angle: (Math.cos(x) + Math.sin(y)).toFixed(2),
           })
         )
       }

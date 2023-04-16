@@ -19,7 +19,7 @@ effect1()
 const effect2 = () => {
   const effect = new Effect2({
     canvasID: "canvas2",
-    resolution: 32,
+    resolution: 128,
     particleAmount: 10,
     debug: true,
   })

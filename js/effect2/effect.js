@@ -128,10 +128,22 @@ class Effect {
       const y = Math.floor(position.y / this.resolution)
       const index = y * this.field.cols + x
 
+      // !DEBUG
+      if (this.field.cells[index] === undefined) {
+        console.log("DUMP START")
+        console.log("index", index)
+        console.log("x", x)
+        console.log("y", y)
+        console.log("cols", this.field.cols)
+        console.log("rows", this.field.rows)
+        console.log("cells", this.field.cells)
+        console.log("DUMP END")
+      }
+
       // Update the particle
-      const { angle, color } = this.field.cells[index]
-      particle.velocity.y = Math.cos(angle)
-      particle.velocity.x = Math.sin(angle)
+      const { angle, color, length } = this.field.cells[index]
+      particle.velocity.x = Math.cos(angle) * length * 0.1
+      particle.velocity.y = Math.sin(angle) * length * 0.1
       particle.color = color
 
       // TODO: bounce the particle off the edges of the canvas instead of wrapping

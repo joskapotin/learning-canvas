@@ -25,7 +25,7 @@ class Particle {
     ctx.fill()
     ctx.restore()
 
-    // this.drawHistory(ctx)
+    this.drawHistory(ctx)
   }
 
   drawHistory(ctx) {
