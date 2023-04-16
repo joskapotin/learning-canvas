@@ -103,18 +103,14 @@ class Effect {
     this.initCanvas()
     this.initField()
     this.initParticles()
-
-    // Draw field in debug mod
-    if (this.debug) this.field.draw(this.ctx)
-
-    // Draw particles
-    this.update()
     this.initEvents()
+    this.update()
   }
 
   update() {
     clearCanvas({ canvas: this.canvas, ctx: this.ctx })
 
+    // Draw field in debug mod
     if (this.debug) this.field.draw(this.ctx)
 
     this.particles.forEach(particle => {
@@ -143,8 +139,8 @@ class Effect {
 
       // Update the particle
       const { angle, color, length } = this.field.cells[index]
-      particle.velocity.x = Math.cos(angle) * length * 0.1
-      particle.velocity.y = Math.sin(angle) * length * 0.1
+      particle.velocity.x = Math.cos(angle) * length * Math.random() * 0.2
+      particle.velocity.y = Math.sin(angle) * length * Math.random() * 0.2
       particle.color = color
 
       // TODO: bounce the particle off the edges of the canvas instead of wrapping

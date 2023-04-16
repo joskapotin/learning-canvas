@@ -1,5 +1,3 @@
-import { modulo } from "../utils.js"
-
 class Cell {
   constructor({ x, y, size, color, angle = 0, length = 0.5 }) {
     this.x = x
@@ -8,13 +6,14 @@ class Cell {
     this.color = color
     this.angle = angle
     this.length = length
+    this.debugColor = "rgba(255, 255, 255, 0.2)"
   }
 
   draw(ctx) {
     // outlines
     ctx.save()
     ctx.lineWidth = 1
-    ctx.strokeStyle = this.color
+    ctx.strokeStyle = this.debugColor
     ctx.translate(this.x, this.y)
     ctx.beginPath()
     ctx.moveTo(this.size, 0)
@@ -23,10 +22,11 @@ class Cell {
     ctx.stroke()
     ctx.restore()
 
+    // vector
     ctx.save()
     ctx.lineWidth = 1
-    ctx.strokeStyle = this.color
-    ctx.fillStyle = this.color
+    ctx.strokeStyle = this.debugColor
+    ctx.fillStyle = this.debugColor
     ctx.translate(this.x + this.size / 2, this.y + this.size / 2)
     ctx.rotate(this.angle)
     ctx.beginPath()
@@ -38,14 +38,14 @@ class Cell {
     ctx.restore()
 
     // text
-    ctx.save()
-    ctx.fillStyle = this.color
-    ctx.translate(this.x + 10 / 2, this.y + 10)
-    ctx.font = `${this.size / 10}px monospace`
-    ctx.textAlign = "left"
-    ctx.textBaseline = "middle"
-    ctx.fillText(modulo(Math.floor(this.angle * (180 / Math.PI)), 360), 0, 0)
-    ctx.restore()
+    // ctx.save()
+    // ctx.fillStyle = this.color
+    // ctx.translate(this.x + 10 / 2, this.y + 10)
+    // ctx.font = `${this.size / 10}px monospace`
+    // ctx.textAlign = "left"
+    // ctx.textBaseline = "middle"
+    // ctx.fillText(modulo(Math.floor(this.angle * (180 / Math.PI)), 360), 0, 0)
+    // ctx.restore()
   }
 }
 
