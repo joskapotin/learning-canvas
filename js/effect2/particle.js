@@ -13,19 +13,25 @@ class Particle {
     this.position = position
     this.velocity = velocity
     this.history = [{ x: this.position.x, y: this.position.y }]
-    this.maxHistory = 100
+    this.maxHistory = 2
   }
 
   draw(ctx) {
     ctx.save()
+    ctx.lineWidth = 2
+    // draw a circle
     ctx.fillStyle = this.color
-    ctx.strokeStyle = this.color
     ctx.beginPath()
     ctx.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI)
     ctx.fill()
-    ctx.restore()
 
-    this.drawHistory(ctx)
+    // draw a line
+    // ctx.strokeStyle = this.color
+    // ctx.beginPath()
+    // ctx.moveTo(this.position.x, this.position.y)
+    // ctx.lineTo(this.history[0].x, this.history[0].y)
+    // ctx.stroke()
+    // ctx.restore()
   }
 
   drawHistory(ctx) {
@@ -55,7 +61,7 @@ class Particle {
     this.position.y += this.velocity.y
 
     // add the current position to the history
-    // this.history.push({ x: this.position.x, y: this.position.y })
+    this.history.push({ x: this.position.x, y: this.position.y })
     // remove the oldest position from the history
     if (this.history.length > this.maxHistory) this.history.shift()
   }

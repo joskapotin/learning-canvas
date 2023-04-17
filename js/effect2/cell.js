@@ -11,16 +11,16 @@ class Cell {
 
   draw(ctx) {
     // outlines
-    ctx.save()
-    ctx.lineWidth = 1
-    ctx.strokeStyle = this.debugColor
-    ctx.translate(this.x, this.y)
-    ctx.beginPath()
-    ctx.moveTo(this.size, 0)
-    ctx.lineTo(this.size, this.size)
-    ctx.lineTo(0, this.size)
-    ctx.stroke()
-    ctx.restore()
+    // ctx.save()
+    // ctx.lineWidth = 1
+    // ctx.strokeStyle = this.debugColor
+    // ctx.translate(this.x, this.y)
+    // ctx.beginPath()
+    // ctx.moveTo(this.size, 0)
+    // ctx.lineTo(this.size, this.size)
+    // ctx.lineTo(0, this.size)
+    // ctx.stroke()
+    // ctx.restore()
 
     // vector
     ctx.save()

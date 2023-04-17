@@ -1,5 +1,5 @@
 import { modulo } from "../utils.js"
-import { clearCanvas, getNewCanvasSize } from "./canvas.js"
+import { getNewCanvasSize } from "./canvas.js"
 import { Field } from "./field.js"
 import { Particle } from "./particle.js"
 
@@ -10,9 +10,9 @@ const createParticles = ({ particlesAmount, particleRadius, canvas }) => {
     particles.push(
       new Particle({
         radius: particleRadius,
-        color: "white",
+        color: "rgba(100, 100, 0, 0.5)",
         position: {
-          x: Math.random() * canvas.width,
+          x: 0,
           y: Math.random() * canvas.height,
         },
       })
@@ -27,7 +27,10 @@ class Effect {
     resolution = 32,
     particleAmount = 100,
     particleRadius = 5,
-    debug = true,
+    debug = false,
+    curve = 0.5,
+    zoom = 0.2,
+    speed = 10,
   }) {
     this.canvasID = canvasID
     this.resolution = resolution
@@ -35,6 +38,9 @@ class Effect {
     this.particleRadius = particleRadius
     this.debug = debug
     this.throttled = false
+    this.curve = curve
+    this.zoom = zoom
+    this.speed = speed
 
     this.width = 0
     this.height = 0
@@ -64,6 +70,8 @@ class Effect {
       rows: this.height / this.resolution,
       cols: this.width / this.resolution,
       resolution: this.resolution,
+      curve: this.curve,
+      zoom: this.zoom,
     })
   }
 
@@ -88,7 +96,7 @@ class Effect {
     this.canvas.addEventListener("mousedown", () => {
       const interval = setInterval(() => {
         this.update()
-      }, 5000 / 60)
+      }, 1000 / 60)
       this.canvas.addEventListener(
         "mouseup",
         () => {
@@ -113,27 +121,52 @@ class Effect {
     })
   }
 
+  resetParticle(particle) {
+    particle.position.x = 0
+    particle.position.y = Math.random() * this.height
+    particle.history = []
+  }
+
   init() {
     this.initCanvas()
     this.initField()
     this.initParticles()
     this.initEvents()
-    this.update()
+    // * DEBUG
+    if (this.debug) this.field.draw(this.ctx)
+
+    // this.update()
   }
 
   update() {
-    clearCanvas({ canvas: this.canvas, ctx: this.ctx })
+    // * CLEAR
+    // clearCanvas({ canvas: this.canvas, ctx: this.ctx })
+    // this.ctx.fillStyle = "rgba(0, 0, 0, 0.01)"
+    // this.ctx.fillRect(0, 0, this.width, this.height)
 
-    // Draw field in debug mod
+    // * DEBUG
     if (this.debug) this.field.draw(this.ctx)
 
+    // * UPDATE
     this.particles.forEach(particle => {
       const { position } = particle
 
-      // wrap the particle around the canvas if it goes out of bounds
+      // * HANDLE BOUNDARIES
+      // remove history and reset position if particle is out of bounds
+      if (
+        position.x < 0 ||
+        position.x > this.width ||
+        position.y < 0 ||
+        position.y > this.height
+      ) {
+        this.resetParticle(particle)
+      }
+
+      // wrap the particle around the canvas
       particle.position.x = modulo(position.x, this.width)
       particle.position.y = modulo(position.y, this.height)
 
+      // * UPDATE PARTICLE
       // get matching flow field cell index
       const x = Math.floor(position.x / this.resolution)
       const y = Math.floor(position.y / this.resolution)
@@ -151,16 +184,26 @@ class Effect {
         console.log("DUMP END")
       }
 
-      // Update the particle
+      // Update the particle properties based on the flow field
       const { angle, color, length } = this.field.cells[index]
-      particle.velocity.x = Math.cos(angle) * length * Math.random() * 0.3
-      particle.velocity.y = Math.sin(angle) * length * Math.random() * 0.3
+      particle.velocity.x =
+        Math.cos(angle) *
+        length *
+        Math.random() *
+        (this.speed / this.resolution)
+      particle.velocity.y =
+        Math.sin(angle) *
+        length *
+        Math.random() *
+        (this.speed / this.resolution)
       particle.color = color
 
       // TODO: bounce the particle off the edges of the canvas instead of wrapping
       // TODO: if wrapping, deal with the trail
 
       particle.update()
+
+      // * DRAW
       particle.draw(this.ctx)
     })
   }
