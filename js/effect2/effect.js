@@ -12,7 +12,7 @@ const createParticles = ({ particlesAmount, particleRadius, canvas }) => {
         radius: particleRadius,
         color: "rgba(100, 100, 0, 0.5)",
         position: {
-          x: 0,
+          x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
         },
       })
@@ -31,6 +31,7 @@ class Effect {
     curve = 0.5,
     zoom = 0.2,
     speed = 10,
+    clear,
   }) {
     this.canvasID = canvasID
     this.resolution = resolution
@@ -41,6 +42,7 @@ class Effect {
     this.curve = curve
     this.zoom = zoom
     this.speed = speed
+    this.clear = clear
 
     this.width = 0
     this.height = 0
@@ -96,7 +98,7 @@ class Effect {
     this.canvas.addEventListener("mousedown", () => {
       const interval = setInterval(() => {
         this.update()
-      }, 1000 / 60)
+      }, 5)
       this.canvas.addEventListener(
         "mouseup",
         () => {
@@ -122,8 +124,10 @@ class Effect {
   }
 
   resetParticle(particle) {
-    particle.position.x = 0
+    particle.position.x = Math.random() * this.width
     particle.position.y = Math.random() * this.height
+    particle.velocity.x = 0
+    particle.velocity.y = 0
     particle.history = []
   }
 
@@ -140,9 +144,21 @@ class Effect {
 
   update() {
     // * CLEAR
-    // clearCanvas({ canvas: this.canvas, ctx: this.ctx })
-    // this.ctx.fillStyle = "rgba(0, 0, 0, 0.01)"
-    // this.ctx.fillRect(0, 0, this.width, this.height)
+    switch (this.clear) {
+      case "clear":
+        this.ctx.clearRect(0, 0, this.width, this.height)
+        break
+      case "fade":
+        this.ctx.fillStyle = "rgba(0, 0, 0, 0.05)"
+        this.ctx.fillRect(0, 0, this.width, this.height)
+        break
+      case "background":
+        this.ctx.fillStyle = this.backgroundColor
+        this.ctx.fillRect(0, 0, this.width, this.height)
+        break
+      default:
+        break
+    }
 
     // * DEBUG
     if (this.debug) this.field.draw(this.ctx)
