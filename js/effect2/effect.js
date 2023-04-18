@@ -32,6 +32,7 @@ class Effect {
     zoom = 0.2,
     speed = 10,
     clear,
+    controlsID,
   }) {
     this.canvasID = canvasID
     this.resolution = resolution
@@ -43,6 +44,7 @@ class Effect {
     this.zoom = zoom
     this.speed = speed
     this.clear = clear
+    this.controlsID = controlsID
 
     this.width = 0
     this.height = 0
@@ -95,6 +97,17 @@ class Effect {
       }, 1000)
     })
 
+    // CONTROLS
+    const controlsUI = document.getElementById(this.controlsID)
+    if (controlsUI) {
+      controlsUI.addEventListener("input", e => {
+        const { name, value } = e.target
+        this[name] = value
+        this.init()
+      })
+    }
+
+    // ANIMATION
     this.canvas.addEventListener("mousedown", () => {
       const interval = setInterval(() => {
         this.update()

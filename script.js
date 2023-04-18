@@ -27,8 +27,10 @@ const effect2 = () => {
     zoom: 1,
     speed: 10,
     clear: "none",
+    controlsID: "controls2",
   })
-
   console.log("effect2", effect)
+  return effect
 }
+
 effect2()

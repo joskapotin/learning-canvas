@@ -26,3 +26,30 @@ body {
   width: 100%;
   background-color: rgb(25, 37, 65);
 }
+
+.controls {
+  opacity: 0.1;
+  transition: opacity 0.3s ease-in-out;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.controls:hover {
+  opacity: 1;
+}
+
+.controls label {
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem;
+}

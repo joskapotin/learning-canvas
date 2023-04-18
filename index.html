@@ -15,6 +15,50 @@
         <canvas id="canvas1" class="canvas"></canvas>
     </div>
     <div class="canvas--wrapper canvas-2">
+        <div class="controls" id="controls-2">
+            <div class="control-group">
+                <label>Resolution<input id="resolution" name="resolution" type="range" min="8" max="128" step="8" />
+                </label>
+            </div>
+            <div class="control-group">
+                <label>Speed<input id="speed" name="speed" type="range" min="0" max="100" step="10" />
+                </label>
+            </div>
+            <div class="control-group">
+                <label>Particles amount<input id="particle-amount" name="particleAmount" type="range" min="0" max="100"
+                        step="1" />
+                </label>
+            </div>
+            <div class="control-group">
+                <label>Particles radius<input id="particle-radius" name="particleRadius" type="range" min="1" max="15"
+                        step="1" />
+                </label>
+            </div>
+            <div class="control-group">
+                <label>Debug<input id="debug" name="debug" type="checkbox" />
+                </label>
+            </div>
+            <div class="control-group">
+                <label>Curve<input id="curve" name="curve" type="range" min="0" max="1" step="0.1" />
+                </label>
+            </div>
+            <div class="control-group">
+                <label>Zoom<input id="zoom" name="zoom" type="range" min="0" max="1" step="0.1" />
+                </label>
+            </div>
+            <div class="control-group">
+                <label>Clear<select id="clear" name="clear">
+                        <option value="clear">Clear</option>
+                        <option value="fade">Fade</option>
+                        <option value="background">Background</option>
+                        <option value="none">None</option>
+                    </select>
+                </label>
+            </div>
+
+
+
+        </div>
         <canvas id="canvas2" class="canvas"></canvas>
     </div>
 

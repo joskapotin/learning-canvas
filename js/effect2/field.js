@@ -21,7 +21,6 @@ class Field {
       for (let x = 0; x < this.cols; x++) {
         const color = "hsla(40, 100%, 50%, 1)"
         const noise = Math.abs(simplex.perlin2(x / this.cols, y / this.rows))
-        console.log(noise)
         this.cells.push(
           // angle: (Math.cos(x * this.zoom) + Math.sin(y * this.zoom)) * this.curve
           new Cell({
